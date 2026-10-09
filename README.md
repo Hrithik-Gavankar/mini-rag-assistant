@@ -15,7 +15,7 @@ Documents → Chunking → Embeddings → Similarity search → LLM + context �
 ## Quick start
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/mini-rag-assistant.git
+git clone https://github.com/Hrithik-Gavankar/mini-rag-assistant.git
 cd mini-rag-assistant
 
 python -m venv .venv
