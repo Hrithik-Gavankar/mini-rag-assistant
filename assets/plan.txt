@@ -1,0 +1,138 @@
+What students will build: an assistant that answers questions about your GenAI lectures using a course-notes file rather than relying entirely on the model's general knowledge.
+A basic RAG pipeline retrieves relevant document chunks and supplies them to the model as context. This is the same core pattern used to answer questions from internal documentation and knowledge bases.
+
+Architecture
+
+Course notes (.txt or .md)
+
+Split into chunks
+
+Small, overlapping text segments
+
+Embeddings + similarity search
+
+Find the chunks most relevant to the question
+
+LLM + retrieved context
+
+Generate a grounded answer with source references
+
+Recommended stack
+
+Keep the implementation deliberately small:
+
+Python for the pipeline.
+
+Streamlit for a simple chat interface.
+
+Sentence Transformers for local text embeddings.
+
+NumPy for cosine similarity over a small collection.
+
+An LLM API for answer generation, using a provider and model you can access before class.
+
+This avoids needing a hosted vector database, complex infrastructure, or a full-stack application. For a small teaching dataset, an in-memory search implementation is sufficient to demonstrate the idea.
+
+Prepare the starter project
+mini-rag/
+├── app.py
+├── rag.py
+├── course_notes.txt
+├── requirements.txt
+└── .env
+
+course_notes.txt should contain 2–4 pages of material from the topics you've taught: prompting, embeddings, RAG, agents, MCP, diffusion, and multimodal AI.
+
+Install the dependencies in advance:
+
+python -m venv .venv
+source .venv/bin/activate
+pip install streamlit sentence-transformers numpy python-dotenv
+
+Add the SDK for your chosen LLM provider to requirements.txt as well. Keep API credentials in .env and never expose them in the frontend or commit them to Git.
+
+The implementation flow
+
+Load the document. Read course_notes.txt into a string.
+
+Chunk the text. Split it into manageable sections, perhaps 150–250 words each, with a little overlap so important context isn't lost at boundaries.
+
+Create embeddings. Encode each chunk into a numerical vector with Sentence Transformers.
+
+Retrieve. Encode the user's question, compute cosine similarity against the chunk vectors, and select the top 3 relevant chunks.
+
+Generate. Send the question and retrieved chunks to the LLM with instructions to answer only from the supplied context.
+
+Display evidence. Show the answer and the source chunks used to produce it.
+
+The live coding plan — 25 minutes
+
+Time
+
+	
+
+What you do
+
+
+
+
+0–3 min
+
+	
+
+Ask a question about the course notes and demonstrate why general AI knowledge may not know the exact answer.
+
+
+
+
+3–8 min
+
+	
+
+Explain and implement text chunking.
+
+
+
+
+8–13 min: Generate embeddings and retrieve the top matching chunks.
+
+
+
+
+13–19 min
+
+	
+
+Pass retrieved context to the LLM and generate an answer.
+
+
+
+
+19–23 min
+
+	
+
+Add a Streamlit input box and display the answer plus sources.
+
+
+
+
+23–25 min
+
+	
+
+Ask a question whose answer is absent from the notes; demonstrate why the assistant should say it cannot find the answer.
+
+Demonstration questions
+
+Try these live:
+
+“Explain the difference between RAG and fine-tuning based on our notes.”
+
+“How does MCP help an AI application use external tools?”
+
+“Which image-generation limitations did we discuss?”
+
+“What is the exact submission deadline for the final project?” — include no such deadline in the notes and see whether the system correctly acknowledges the missing information.
+
+Important teaching point: RAG does not automatically make a model truthful. Retrieval can return irrelevant passages, and the model can still misinterpret them. Showing the retrieved sources helps students debug the entire pipeline rather than treating the LLM as a black box.

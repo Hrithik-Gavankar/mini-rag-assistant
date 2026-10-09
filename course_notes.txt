@@ -1,0 +1,121 @@
+Generative AI Course Notes — Lecture Summary
+============================================
+
+These notes summarize core topics from our Generative AI module: prompting, embeddings,
+retrieval-augmented generation (RAG), agents, the Model Context Protocol (MCP), diffusion
+models, and multimodal systems. Use them as the single source of truth for in-class demos.
+
+
+1. Prompting fundamentals
+-------------------------
+
+Prompting is how we instruct a language model without changing its weights. Effective prompts
+usually specify role, task, constraints, and desired output format. Zero-shot prompting asks the
+model to perform a task with no examples. Few-shot prompting includes a small set of input–output
+examples in the prompt to steer behavior.
+
+Chain-of-thought (CoT) prompting encourages the model to reason step by step before giving a final
+answer, which often improves performance on math and logic problems. System messages (or system
+prompts) set persistent behavior for a conversation, while user messages carry the actual request.
+
+Limitations: models can hallucinate plausible but false facts, especially when asked about
+private or time-sensitive information that was never in training data. Prompting does not give
+the model access to your private documents unless you paste them into the context window.
+
+
+2. Embeddings and semantic search
+---------------------------------
+
+An embedding model maps text into a dense vector (a list of numbers). Texts with similar meaning
+tend to have vectors that are close in direction. We often measure closeness with cosine
+similarity: higher scores mean more related content.
+
+Embeddings power semantic search: instead of matching exact keywords, we find passages that are
+conceptually similar to a question. For small course projects, you can store all chunk vectors in
+memory and compare them with NumPy — no hosted vector database is required until collections grow
+large.
+
+Popular embedding families include OpenAI text-embedding models, Cohere embed models, and open
+models such as BGE and Sentence Transformers (e.g. all-MiniLM-L6-v2 for lightweight local use).
+
+
+3. Retrieval-Augmented Generation (RAG)
+---------------------------------------
+
+RAG combines retrieval with generation. At a high level: (1) split documents into chunks,
+(2) embed chunks and store vectors, (3) embed the user question, (4) retrieve the top-k most
+similar chunks, (5) pass those chunks as context to an LLM so it can answer using your data.
+
+RAG vs fine-tuning: fine-tuning updates model weights on new examples, which is powerful but
+costly, slower to iterate, and risky if training data is wrong or stale. RAG keeps the base model
+fixed and injects fresh context at query time — better when facts change often or when you need
+citations to source documents. Fine-tuning is often used for style, format, or specialized skills;
+RAG is often used for knowledge grounded in a specific corpus.
+
+RAG does not guarantee truth. Wrong chunks can be retrieved (low similarity or ambiguous queries),
+and the LLM can still misread correct chunks. Showing retrieved sources to the user is a best
+practice so developers and students can debug retrieval and prompting together.
+
+
+4. Agents and tool use
+----------------------
+
+An AI agent is a loop where the model plans actions, calls tools, observes results, and continues
+until a goal is met. Tools might be calculators, search APIs, databases, or code execution.
+Without tools, a model only produces text; with tools, it can act on the world in limited ways.
+
+Agents need clear instructions, guardrails, and often human approval for sensitive operations.
+Failure modes include infinite loops, calling the wrong tool, or trusting tool output without
+verification.
+
+
+5. Model Context Protocol (MCP)
+-------------------------------
+
+MCP is an open standard for connecting AI applications to external data sources and tools through
+a consistent protocol. Instead of every app implementing custom integrations, MCP defines how
+hosts (IDEs, chat apps) discover and call tools exposed by MCP servers.
+
+For students building assistants: MCP helps an AI application use external tools and context in a
+structured way — for example, reading from a documentation server, querying an issue tracker, or
+invoking approved APIs — without hard-coding each integration inside the prompt. The model (or
+orchestrator) selects tools; MCP standardizes how those tools are described and invoked.
+
+
+6. Diffusion models for images
+------------------------------
+
+Diffusion models generate images by learning to reverse a noise process: start from random noise
+and gradually denoise toward a coherent image conditioned on a text prompt. Training is
+compute-heavy; inference runs in multiple steps (often tens to hundreds).
+
+Limitations we discussed in class:
+- Text in images is often garbled or misspelled.
+- Fine details (hands, fingers, small faces) are still unreliable in many models.
+- Models reflect biases present in training data; prompts can produce stereotyped outputs.
+- Copyright, consent, and attribution for training data remain active legal and ethical debates.
+- Controlling exact layout (precise logos, consistent characters across scenes) is hard without
+  extra techniques such as control nets, inpainting, or reference images.
+
+
+7. Multimodal AI
+----------------
+
+Multimodal systems accept more than one input type — commonly text + images, sometimes audio or
+video. Vision-language models can caption images, answer questions about pictures, or follow
+instructions that reference visual content.
+
+In production, multimodal pipelines must handle file size limits, latency, and privacy (e.g.
+medical or personal photos). RAG can extend to multimodal corpora when embeddings exist for
+images and text, but this mini project focuses on text-only notes for clarity.
+
+
+8. Course logistics (partial)
+-----------------------------
+
+Weekly labs reinforce each topic above. Participation in live retrieval demos is encouraged.
+Office hours are posted on the learning portal each week.
+
+There is no fixed “final exam” described in this document; assessment details are announced
+separately on the portal. This notes file intentionally does not include a final project
+submission deadline — check official course communications for due dates.
